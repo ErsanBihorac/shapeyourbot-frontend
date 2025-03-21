@@ -1,12 +1,44 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 const message = ref<string>("");
 const chatHistory = ref<string[]>(["Das ist eine vor definierte Nachricht"]);
+const webSocket = ref<WebSocket | null>(null);
+
+const initWebsocketConnection = () => {
+  webSocket.value = new WebSocket(`ws://localhost:8000/ws/socket-server/`);
+
+  webSocket.value.onmessage = function (e) {
+    let data = JSON.parse(e.data);
+    console.log("Data: ", data);
+
+    if (data.type === "chat") {
+      chatHistory.value.push(data.message);
+    }
+  };
+
+  webSocket.value.onerror = function (error) {
+    console.error("WebSocket Error: ", error);
+  };
+
+  webSocket.value.onclose = function () {
+    console.log("WebSocket connection closed.");
+  };
+};
 
 const handleClick = () => {
-  console.log("click handled");
-  chatHistory.value.push(message.value);
+  if (webSocket.value && message.value.trim() !== "") {
+    webSocket.value.send(
+      JSON.stringify({
+        message: `You: ${message.value}`,
+      })
+    );
+    message.value = ""; 
+  }
 };
+
+onMounted(() => {
+  initWebsocketConnection();
+});
 </script>
 
 <template>
