@@ -4,6 +4,6 @@ import FormView from "./views/FormView.vue";
 </script>
 
 <template>
-  <!-- <ChatView></ChatView> -->
+  <ChatView></ChatView>
   <FormView></FormView>
 </template>

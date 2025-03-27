@@ -22,6 +22,7 @@ const selectFile = () => {
     });
   });
 };
+
 // replace any type with proper type
 const upload = (file: any) => {
   performUpload(file)
